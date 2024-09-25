@@ -4,16 +4,20 @@ import { ConfigService } from '@nestjs/config';
 @Controller()
 export class ProbesController {
     constructor(
-        private readonly configService: ConfigService
+        private readonly configService: ConfigService,
+        // Aquí puedes inyectar otros servicios que necesites para la verificación de readiness, etc.
+        // private readonly casperService: CasperService,
+        // private readonly suscripcionesService: SuscripcionesService,
     ) { }
 
     @Get('/liveness')
     @Header('Custom-Header', 'liveness probe')
     @HttpCode(200)
     livenessProbe() {
-        const version = this.configService.get<string>('npm_package_version');
-        const name = this.configService.get<string>('npm_package_name');
-        const description = this.configService.get<string>('npm_package_description');
+        const name = this.configService.get<string>('app.name');
+        console.log('name', name)
+        const version = this.configService.get<string>('app.version');
+        const description = this.configService.get<string>('app.description');
         const environment = this.configService.get<string>('NODE_ENV');
         const date = new Date().toISOString();
 
@@ -29,8 +33,8 @@ export class ProbesController {
     @Header('Custom-Header', 'startup probe')
     @HttpCode(200)
     startupProbe() {
-        const version = this.configService.get<string>('npm_package_version');
-        const description = this.configService.get<string>('npm_package_description');
+        const version = this.configService.get<string>('KeyVaultName');
+        const description = process.env.KeyVaultName;
         const date = new Date().toISOString();
 
         return {
@@ -58,15 +62,18 @@ export class ProbesController {
         let status = 'UNHEALTHY';
 
         try {
-            //const casperService = await this. // Método del servicio de casper
+            // Llamada al servicio real de casper, cuando esté listo
+            // const casperService = await this.casperService.findOne(...);
+            // Simulación:
+            const casperService = true;
 
-            //if (casperService) {
-            casper = {
-                name: 'casper',
-                status: 'HEALTHY',
-                detail: '1 item found',
-            };
-            //}
+            if (casperService) {
+                casper = {
+                    name: 'casper',
+                    status: 'HEALTHY',
+                    detail: '1 item found',
+                };
+            }
         } catch (error) {
             console.error('casper', error);
             casper = {
@@ -77,15 +84,18 @@ export class ProbesController {
         }
 
         try {
-            //const suscripcionesService = await this. // Método del servicio de suscripciones
+            // Llamada al servicio real de suscripciones, cuando esté listo
+            // const suscripcionesService = await this.suscripcionesService.findOne(...);
+            // Simulación:
+            const suscripcionesService = true;
 
-            //if (suscripcionesService) {
-            suscripciones = {
-                name: 'suscripciones',
-                status: 'HEALTHY',
-                detail: '1 item found',
-            };
-            //}
+            if (suscripcionesService) {
+                suscripciones = {
+                    name: 'suscripciones',
+                    status: 'HEALTHY',
+                    detail: '1 item found',
+                };
+            }
         } catch (error) {
             console.error('suscripciones', error);
             suscripciones = {
